@@ -1,0 +1,159 @@
+<style>
+  body {
+    background-color: transparent;
+    margin: 0;
+    padding: 0;
+  }
+  .container
+  {
+    background-size:contain;
+    background-repeat: no-repeat;
+    background-position: center top;
+    padding:550px 20px 0 50px;
+    width:100%;
+    margin:auto;
+margin-top:0;
+  }
+  @font-face {
+    font-family: 'AminoAlt';
+    font-style: normal;
+    font-weight: 300;
+    src: url('<%= Rails.root.join('app', 'assets', 'fonts', 'AminoA.ttf') %>') format('truetype')
+  }
+  @font-face {
+    font-family: 'AminoAltMedium';
+    font-style: normal;
+    font-weight: 300;
+    src: url('<%= Rails.root.join('app', 'assets', 'fonts', 'Aminom.ttf') %>') format('truetype')
+  }
+  span {
+    color: #244762;
+  }
+
+  .table{
+    float: left;
+    width: 300px;
+    margin-top: -13px;
+    color: #59C7BA;
+    font-family: AminoAlt;
+    font-size: 12pt;
+  }
+</style>
+<% i = 0 %>
+<% @invoice.ticket_items.each do |ticket| %>
+    <% unless (ticket.event.ticketimage.nil? || ticket.event.ticketimage == "") %>
+        <style>
+        .container
+        {
+        background-image: url('http://95.86.129.229:20300/assets/<%= ticket.event.ticketimage %>');
+        }
+        </style>
+    <% end %>
+          <%if (ticket.event.competition.name.include? "Novruz") %>
+          <style>
+                  .container
+        {
+        margin-top: 50px;
+        }
+         </style>
+            <% end %>
+    <div class="container">
+      <div>
+        <!--<h1 style="margin-top: 0;">-->
+        <!--<%= ticket.event.name %>
+      #59C7BA
+      #244762
+      -->
+        <!--</h1>-->
+        <!--<div style="  margin-left:0; font-size:20px; color: #59C7BA; font-family: AminoAlt !important;"> İdman Gimnastikası üzrə <br> FIG Dünya "Challenge" Kuboku </div>-->
+         <% unless (ticket.event.competition.name.include? "Novruz") %>
+        <div style="  margin-left:0; font-size:18px; margin-top:5px; color: #244762; font-family: AminoAlt !important;"><%= ticket.event.name %></div>        
+            <% end %>       
+        <div style="  margin-left:0; font-size:18px; font-weight:600; color: #244762; font-family: AminoAltMedium !important;"> <%= ticket.event.datetime.day %><%= ticket.event.datetime.strftime(" %B").sub('February', "fevral").sub('March', "mart")%> 2016-cı il,<%= ticket.event.datetime.strftime(" %H:%M") %> </div>
+        <br>
+        <table class="table" style=" padding: 0; margin-left: 0; font-size:14px; float: left; width:220px;">
+          <tr>
+            <td width="15" style=" color:#59C7BA; font-family: AminoAlt !important;">Məkan</td>
+            <td ><span style=" color: #244762; word-break: keep-all; font-family: AminoAlt !important;"> Milli Gimnastika Arenası</span></td>
+          </tr>
+          <tr>
+            <td style=" color:#59C7BA; font-family: AminoAlt !important;">Giriş</td>
+            <td><span style="font-weight:300; color: #244762; font-family: AminoAltMedium !important;"><%= ticket.entrance %></span></td>
+          </tr>
+          <tr>
+            <td style=" color:#59C7BA; font-family: AminoAlt !important;">Sektor</td>
+            <td><span style=" font-weight:300; color: #244762; font-family: AminoAltMedium !important;"><%= ticket.sector %></span></td>
+          </tr>
+          <tr>
+            <td style="; color:#59C7BA; font-family: AminoAlt !important;">Sıra</td>
+            <td><span style=" font-weight:300; color: #244762; font-family: AminoAltMedium !important;"><%= ticket.row %></span></td>
+          </tr>
+          <tr>
+            <td style=" color:#59C7BA; font-family: AminoAlt !important;">Yer</td>
+            <td><span style="font-weight:300; color: #244762; font-family: AminoAltMedium !important;"><%= ticket.column %></span></td>
+            <!--     <td><span><%= ticket.event.competition.name %></span></td>
+            <td><span><%= ticket.event.name %></span></td>
+            <td><span><%= ticket.event.datetime %></span></td>-->
+          </tr>
+        </table>
+        <div style="float:right;text-align: center;margin: -10px 0 0 0;">
+          <div style="margin-bottom:-6px"><span style="font-size:14px; margin-bottom:-62px; color:#59C7BA"><% if ticket.ticket_type == 'invitation' %> Dəvətnamə <% else %>Qiymət:  <%= ticket.price.to_f.round(2)%> AZN <% end %></span></div>
+          <div style="margin-bottom: -20px"><span style="font-size: 7px; color:#59C7BA"><% if (ticket.ticket_type == 'invitation') == false %>( Xalis <%= (ticket.price.to_i/1.18).round(2) %>, ƏDV <%= (ticket.price.to_i - (ticket.price.to_i/1.18).round(2)).round(2) %> )<% end %></span></div>
+          <br/>
+          <%= wicked_pdf_image_tag_for_public( @barcodes[i] ) %><br/>
+          <div style="margin-top: -5px"><%= ticket.seat_id.to_s + '_' + ticket.event_id.to_s %></div>
+        </div>
+         <%if (ticket.event.competition.name.include? "Novruz") %>
+         <div style=" margin-top:80px;display: block">
+         <% else %>
+         <div style=" margin-top:110px;display: block">
+            <% end %>
+
+           <div style="float:left; clear:right; margin-top:30px; width:auto; display:inline-block">
+            <% if (ticket.event.competition.name.include? "FIG") %>
+                <span style="font-size:16px ;color: #59C7BA; font-family: AminoAlt !important;"><%= ticket.event.competition.name.split("FIG").first %> <br> FIG <%= ticket.event.competition.name.split("FIG").last%></span><br>
+                <span style="font-size:16px ;color: #244762; font-family: AminoAlt !important;"><%= ticket.event.name %></span> <br>
+            <% elsif (ticket.event.competition.name.include? "Novruz") %>
+             <span style="font-size:16px ;color: #59C7BA; font-family: AminoAlt !important;"><%= ticket.event.competition.name.split("Novruz").first %> <br> Novruz <%= ticket.event.competition.name.split("Novruz").last%></span><br>
+                <% else %>
+                <span style="font-size:16px ;color: #59C7BA; font-family: AminoAlt !important;"><%= ticket.event.competition.name %></span><br>
+                <span style="font-size:16px ;color: #244762; font-family: AminoAlt !important;"><%= ticket.event.name %></span> <br>
+            <% end %>
+          </div>
+          <div style="clear:right; float:right; font-family: AminoM !important; ">
+            <table style="margin-top: 30px; font-size: 12px;float:right; margin-right: 10px;">
+              <tr>
+                <td style="color:#59C7BA; font-family: AminoAlt !important;">Giriş</td>
+                <td><span style="font-weight:300; color: #244762; font-family: AminoAltMedium !important;"><%= ticket.entrance %></span></td>
+              </tr>
+              <tr>
+                <td style="color:#59C7BA; font-family: AminoAlt !important;">Sektor</td>
+                <td><span style="font-weight:300; color: #244762; font-family: AminoAltMedium !important;"><%= ticket.sector  %></span></td>
+              </tr>
+              <tr>
+                <td style="color:#59C7BA; font-family: AminoAlt !important;">Sıra</td>
+                <td><span style="font-weight:300; color: #244762; font-family: AminoAltMedium !important;"><%= ticket.row %></span></td>
+              </tr>
+              <tr>
+                <td style="color:#59C7BA; font-family: AminoAlt !important;">Yer</td>
+                <td><span style="font-weight:300; color: #244762; font-family: AminoAltMedium !important;"><%= ticket.column %></span></td>
+              </tr>
+            </table>
+          </div>
+        </div>
+
+        <div style="float:right;width:100%;padding-top: 10px;padding-right: 10px;">
+          <span style="float:left;font-size:14px ;color: #244762; font-weight: 600; font-family: AminoAltMedium !important;"> <%= ticket.event.datetime.day %> <%= ticket.event.datetime.strftime(" %B").sub('February', "fevral").sub('March', "mart")%> 2016-cı il,<%= ticket.event.datetime.strftime(" %H:%M") %> </span>
+          <span style="float:right;font-size:14px; color:#59C7BA; font-family: AminoAlt !important;"><% if ticket.ticket_type == 'invitation' %> Dəvətnamə <% else %>Qiymət:  <%= ticket.price.to_f.round(2) %> AZN<% end %></span><br/>
+        </div>
+
+      </div>
+
+    </div>
+
+
+
+
+    <% i = i + 1 %>
+    <div class="page-break" style="display:block; clear:both; page-break-after:always;"></div>
+<% end %>

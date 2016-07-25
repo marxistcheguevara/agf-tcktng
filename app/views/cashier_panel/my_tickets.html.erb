@@ -1,0 +1,42 @@
+<h1>Bu gün satılmış biletlərin siyahısı  -  <a class="btn btn-large btn-info" href="/cashier/report">HESABAT</a></h1>
+<table id="tickets-table" class="table table-striped table-bordered" data-source="/cashier/my_tickets.json">
+  <thead>
+  <tr>
+    <th>id</th>
+    <th>Tədbir</th>
+    <th>Sektor</th>
+    <th>Yer</th>
+    <th>Qiymət</th>
+    <th>type</th>
+    <th>Yaradılma vaxtı</th>
+    <th width="20">Göstər</th>
+  </tr>
+  </thead>
+  <tbody>
+  </tbody>
+</table>
+
+
+<script type="text/javascript">
+    jQuery(document).ready(function() {
+        var table = $('#tickets-table').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "ajax": $('#tickets-table').data('source'),
+            "pagingType": "full_numbers",
+          "columnDefs": [ {
+            "targets": -1,
+            "data": null,
+            "defaultContent": "<button class='btn btn-large btn-info'>PDF</button>"
+          } ]
+          // optional, if you want full pagination controls.
+          // Check dataTables documentation to learn more about
+          // available options.
+        });
+
+      $('#tickets-table tbody').on( 'click', 'button', function () {
+        var data = table.row( $(this).parents('tr') ).data();
+        window.open('ticket/show/' + data[0] + '.pdf', '_blank');
+      } );
+    });
+</script>

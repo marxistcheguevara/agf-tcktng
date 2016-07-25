@@ -1,0 +1,535 @@
+
+<div class="page_header">
+  <div class="center">
+    <img class="page_header_logo fl" src="/images/events_logo.png" alt="">
+    <h1 class="page_header_title fl"><%= @event.name %></h1>
+    <ul class="page_header_nav fr">
+      <li><a href="/<%=I18n.locale%>"><%= t('mainPage') %></a></li>
+      <!--<li><a class="active" href="events.html">Tədbirlər</a></li>-->
+    </ul>
+    <div class="cf"></div>
+  </div>
+</div>
+
+<script type="text/javascript">
+  $(document).ready(function(){
+    $(".size").click(function(){
+      $('.arena').trigger('click');
+    });
+    // Adding class according to evendate (add 'E' character before to avoid classname error)
+    var arenaclass = $('#hdnEventdate').val()
+        //.split("(")[0]
+        .replace("/", "");
+    arenaclass = arenaclass.replace(/'/g, '');
+    arenaclass = arenaclass.replace(/-/g, '');
+    arenaclass = arenaclass.replace(/ /g, '').toUpperCase();
+    $('.arena').addClass('E' + arenaclass);
+  })
+</script>
+<div id="checkout-modal" class="modal" style="display: none;">
+</div>
+
+<div class="event_opened_content" data-ng-controller="MainController">
+  <input type="hidden" ng-init="locale = '<%= I18n.locale %>'" ng-model="locale" />
+  <% if @event %>
+      <input type="hidden" value="<%= @event.datetime.strftime("%d") %>" id="hdnEventdate" />
+      <h1 style="text-transform: capitalize;  display: inline;" id="eventName"><%= @event.name %></h1><h1 style="text-transform: capitalize; display: inline;"><%= @event.datetime.strftime(" %d") %><%= @event.datetime.strftime(" %B")%></h1><br>
+      <div style="width: 960px; margin-top: 10px; height: 40px;">
+        <a href="#checkout-modal" class="select_program_button" style="font-size: 18px;float:left;display:block;padding: 5px;margin:0;text-align:center; width: 200px;" ng-click="checkout()"><%= t('buySelectedTickets')%> &raquo;</a>
+      </div>
+      <div class="booking-details" style="margin-left: 10px;margin-bottom: 10px;">
+        <h3 id="selectedPlacestotal"><%= t('chosenPlaces') %>(<span id="counter">{{ selectedSeats.length }}</span>)<%= t('priceAll') %><b><span id="total">{{ total }}</span> AZN</b>:</h3>
+        <div style="min-height:60px; margin-bottom:15px">
+          <ul id="selected-seats">
+            <li ng-repeat="selectedSeat in selectedSeats" class="selectedPlaces"
+                  data-seat-id="{{ selectedSeat.seat.id }}"
+                  data-event-id="{{ selectedSeat.event_id }}"
+                  data-sector-id="{{ selectedSeat.seat.sector_id }}"
+                  title="{{ 'Sektor:  ' + selectedSeat.seat.sector_id }}" >
+                {{ selectedSeat.seat.real_row + selectedSeat.seat.real_column + ', '+ selectedSeat.price +' AZN' }} </b>
+                <a class="cancel-cart-item btn btn-danger"><%= t('cancelSelection') %></a>
+              </li>
+          </ul>
+        </div>
+
+        <div id="legend" style="float: right"></div>
+      </div>
+      <div id="dvDefaultView" style="">
+        <button class="size btn btn-success">
+          <span class="glyphicon glyphicon-zoom-out" style="font-size:18px"></span>
+        </button>
+      </div>
+      <div id="arena" class="arena zoomViewport">
+        <div class="zoomContainer">
+
+          <div class="oddNumb coneNumb leftopconefloor2" >117</div>
+          <div class="sector sector-37 zoomTarget" data-sector-id="30"></div>
+          <div class="sNumb coneNumb leftopconefloor4">318-317</div>
+          <div class="sector sector-40 zoomTarget" data-sector-id="31"></div>
+          <div class="section section-1 cone">
+            <div class="section-1-sectors">
+              <div class="cs3 dtsctr31 floor-4">
+                <div class="trapezoid" ng-class="{ 'nonactivecone': sectors[30].available == 0 }"></div>
+              </div>
+              <div class="cs2 floor-3">
+                <div class="trapezoid"></div>
+              </div>
+              <div class="cs1 dtsctr30 floor-2">
+                <div id="s1fl2trpzd" class="trapezoid" ng-class="{ 'nonactivecone': sectors[29].available == 0 }"></div>
+              </div>
+            </div>
+          </div>
+          <!-- sector divs are outside the cone here -->
+          <div class="sNumb coneNumb sectorNumbfloor2cone3">112-111</div>
+          <div class="sector sector-33 zoomTarget" data-sector-id="6"></div>
+          <div class="sNumb coneNumb sectorNumbfloor4cone3">312-311</div>
+          <div class="sector sector-34 zoomTarget" data-sector-id="20"></div>
+          <div class="section section-3 cone">
+            <div class="section-3-sectors">
+              <div class="cs3 dtsctr20 floor-4">
+                <div class="trapezoid" ng-class="{ 'nonactivecone': sectors[19].available == 0 }"></div>
+              </div>
+              <div class="cs2 floor-3">
+                <div class="trapezoid"></div>
+              </div>
+              <div class="cs1 dtsctr6 floor-2">
+                <div id="s3fl2trpzd" class="trapezoid" ng-class="{ 'nonactivecone': sectors[5].available == 0 }"></div>
+              </div>
+            </div>
+          </div>
+          <!-- sector divs are outside the cone here -->
+          <div class="sNumb coneNumb sectorNumbfloor2cone5">107-108</div>
+          <div class="sector sector-35 zoomTarget" data-sector-id="10"></div>
+          <div class="sNumb coneNumb sectorNumbfloor4cone5">308-307</div>
+          <div class="sector sector-36 zoomTarget" data-sector-id="16" ></div>
+          <div class="section section-5 cone">
+            <div class="section-5-sectors">
+              <div class="cs3 dtsctr16 floor-4">
+                <div class="trapezoid" ng-class="{ 'nonactivecone': sectors[15].available == 0 }"></div>
+              </div>
+              <div class="cs2 floor-3">
+                <div class="trapezoid"></div>
+              </div>
+              <div class="cs1 dtsctr10 floor-2">
+                <div id="s5fl2trpzd" class="trapezoid" ng-class="{ 'nonactivecone': sectors[9].available == 0 }"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- sector divs are outside the cone here -->
+          <div style="margin-top: 484px;transform: rotate(45deg);z-index: 14;margin-left: 160px;display: block;"  class="sNumb oddNumb coneNumb leftbottomconefloor2 spnRotate180" style="z-index:-5">102</div>
+          <div class="sector sector-42 zoomTarget" data-sector-id="29"></div>
+          <div style="
+          transform: rotate(45deg);
+              margin-top: 533px;
+              margin-left: 88px;
+              color: #66B5B8;
+              z-index: 1;
+          " class="sNumb coneNumb leftbottomconefloor4 spnRotate180">302-301</div>
+          <div class="sector sector-41 zoomTarget" data-sector-id="32"></div>
+          <div class="section section-7 cone">
+            <div class="section-7-sectors">
+              <div class="cs3 dtsctr32 floor-4">
+                <div class="trapezoid" ng-class="{ 'nonactivecone': sectors[31].available == 0 }"></div>
+              </div>
+              <div class="cs2 floor-3">
+                <div class="trapezoid"></div>
+              </div>
+              <div class="cs1 dtsctr29 floor-2">
+                <div class="trapezoid" ng-class="{ 'nonactivecone': sectors[28].available == 0 }"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section section-2">
+            <div class="section-2-sectors">
+              <div class="floor-4">
+                <div class="sNumb sectorNumbfloor4"  >317-316</div>
+                <div class="sector sector-1 zoomTarget"  data-sector-id="25" ng-class="{ 'nonactive': sectors[24].available == 0 }" >
+
+                </div>
+                <div class="sNumb sectorNumbfloor4" style="margin-left:100px">316-315</div>
+                <div class="sector sector-2 zoomTarget" data-sector-id="24" ng-class="{ 'nonactive': sectors[23].available == 0 }">
+
+                </div>
+                <div class="sNumb sectorNumbfloor4" style="margin-left:200px">315-314</div>
+                <div class="sector sector-3 zoomTarget" data-sector-id="23" ng-class="{ 'nonactive': sectors[22].available == 0 }">
+                  <div class="seat-map-23">
+
+                  </div>
+                </div>
+                <div class="sNumb sectorNumbfloor4"  style="margin-left:300px" >314-313</div>
+                <div class="sector sector-4 zoomTarget"  data-sector-id="22" ng-class="{ 'nonactive': sectors[21].available == 0 }">
+
+
+                  <div class="seat-map-22">
+
+                  </div>
+                </div>
+                <div class="sNumb sectorNumbfloor4" style="margin-left:400px">313-312</div>
+                <div class="sector sector-5 zoomTarget" data-sector-id="21" ng-class="{ 'nonactive': sectors[20].available == 0 }">
+
+                  <div class="seat-map-21">
+
+                  </div>
+                </div>
+              </div>
+              <div class="floor-3">
+                <div class="sNumb sectorNumbfloor3"></div>
+                <div class="sector sector-6 zoomTarget">
+                </div>
+                <div class="sNumb sectorNumbfloor3" style="margin-left:100px"></div>
+                <div class="sector sector-7 zoomTarget">
+                </div>
+                <div class="sNumb sectorNumbfloor3" style="margin-left:200px"></div>
+                <div class="sector sector-8 zoomTarget">
+                </div>
+                <div class="sNumb sectorNumbfloor3" style="margin-left:300px"></div>
+                <div class="sector sector-9 zoomTarget">
+                </div>
+                <div class="sNumb sectorNumbfloor3" style="margin-left:400px"></div>
+                <div class="sector sector-10 zoomTarget">
+                </div>
+              </div>
+              <div class="floor-2">
+                <div class="sNumb sectorNumb">117-116</div>
+                <div class="sector sector-11 zoomTarget" data-sector-id="1" ng-class="{ 'nonactive': sectors[0].available == 0 }">
+
+                </div>
+                <div class="sNumb sectorNumb" style="margin-left: 100px">116-115</div>
+                <div class="sector sector-12 zoomTarget" data-sector-id="2" ng-class="{ 'nonactive': sectors[1].available == 0 }">
+
+                  <div class="seat-map-2">
+                  </div>
+                </div>
+                <div class="sNumb sectorNumb" style="margin-left: 200px">115-114</div>
+                <div class="sector sector-13 zoomTarget" data-sector-id="3" ng-class="{ 'nonactive': sectors[2].available == 0 }">
+
+                  <div class="seat-map-3">
+                  </div>
+                </div>
+                <div class="sNumb sectorNumb" style="margin-left: 300px">114-113</div>
+                <div class="sector sector-14 zoomTarget" data-sector-id="4" ng-class="{ 'nonactive': sectors[3].available == 0 }">
+
+                  <div class="seat-map-4">
+
+                  </div>
+                </div>
+                <div class="sNumb sectorNumb" style="margin-left: 400px">113-112</div>
+                <div class="sector sector-15 zoomTarget" data-sector-id="5" ng-class="{ 'nonactive': sectors[4].available == 0 }">
+
+                  <div class="seat-map-5">
+
+                  </div>
+                </div>
+              </div>
+              <div class="floor-1">
+                <div class="sector sector-16 "></div>
+                <div class="sector sector-17 "></div>
+                <div class="sector sector-18 "></div>
+                <div class="sector sector-19 "></div>
+                <div class="sector sector-20 "></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section section-4">
+            <div class="section-4-sectors">
+              <div class="floor-4">
+                <div class="sNumb section4floor4">311-310</div>
+                <div class="sector sector-21 zoomTarget" data-sector-id="19" ng-class="{ 'nonactive': sectors[18].available == 0 }">
+                  <div class="seat-map-19">
+                  </div>
+                </div>
+                <div class="sNumb section4floor4" style="margin-left: 92px;">310-309</div>
+                <div class="sector sector-22 zoomTarget" data-sector-id="18" ng-class="{ 'nonactive': sectors[17].available == 0 }">
+                  <div class="seat-map-18">
+                  </div>
+                </div>
+                <div class="sNumb section4floor4" style="margin-left: 175px;">309-308</div>
+                <div class="sector sector-23 zoomTarget" data-sector-id="17" ng-class="{ 'nonactive': sectors[16].available == 0 }">
+                  <div class="seat-map-17">
+                  </div>
+                </div>
+              </div>
+              <div class="floor-3">
+                <div class="sNumb section4floor3"></div>
+                <div class="sector sector-24 zoomTarget">
+                </div>
+                <div class="sNumb section4floor3" style="margin-left: 92px;"></div>
+                <div class="sector sector-25 zoomTarget">
+                </div>
+                <div class="sNumb section4floor3" style="margin-left: 175px;"></div>
+                <div class="sector sector-26 zoomTarget">
+                </div>
+              </div>
+              <div class="floor-2">
+                <div class="sNumb section4floor2">111-110</div>
+                <div class="sector sector-27 zoomTarget" data-sector-id="7" ng-class="{ 'nonactive': sectors[6].available == 0 }">
+                  <div class="seat-map-7">
+                  </div>
+                </div>
+                <div class="sNumb section4floor2" style="margin-left:77px">110-109</div>
+                <div class="sector sector-28 zoomTarget" data-sector-id="8" ng-class="{ 'nonactive': sectors[7].available == 0 }">
+                  <div class="seat-map-8">
+                  </div>
+                </div>
+                <div class="sNumb section4floor2" style="margin-left:161px">109-108</div>
+                <div class="sector sector-29 zoomTarget" data-sector-id="9" ng-class="{ 'nonactive': sectors[8].available == 0 }">
+                  <div class="seat-map-9">
+                  </div>
+                </div>
+              </div>
+              <div class="floor-1">
+                <div class="sector sector-30 " data-sector-id="10" >
+                </div>
+                <div class="sector sector-31 ">
+                </div>
+                <div class="sector sector-32 ">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="section section-6">
+            <div class="section-6-sectors">
+              <div class="floor-4">
+                <div class="sNumb spnRotate180 sectorNumbfloor4">306-307</div>
+                <div class="sector sector-1 zoomTarget " data-sector-id="15" ng-class="{ 'nonactive': sectors[14].available == 0 }">
+
+                  <div class="seat-map-15">
+
+                  </div>
+                </div>
+                <div class="sNumb spnRotate180 sectorNumbfloor4" style="margin-left: 100px">305-306</div>
+                <div class="sector sector-2 zoomTarget" data-sector-id="14" ng-class="{ 'nonactive': sectors[13].available == 0 }">
+
+                  <div class="seat-map-14">
+                  </div>
+                </div>
+                <div class="sNumb spnRotate180 sectorNumbfloor4" style="margin-left: 200px">304-305</div>
+                <div class="sector sector-3 zoomTarget" data-sector-id="13" ng-class="{ 'nonactive': sectors[12].available == 0 }"></div>
+                <div class="sNumb spnRotate180 sectorNumbfloor4" style="margin-left: 300px">303-304</div>
+                <div class="sector sector-4 zoomTarget" data-sector-id="27" ng-class="{ 'nonactive': sectors[26].available == 0 }">
+
+                </div>
+                <div class="sNumb spnRotate180 sectorNumbfloor4" style="margin-left: 400px">302-303</div>
+                <div class="sector sector-5 zoomTarget" data-sector-id="26" ng-class="{ 'nonactive': sectors[25].available == 0 }">
+
+                </div>
+              </div>
+              <div class="floor-3">
+                <div class="sNumb spnRotate180 sectorNumbfloor3"></div>
+                <div class="sector sector-6 zoomTarget" >
+                </div>
+                <div class="sNumb spnRotate180 sectorNumbfloor3" style="margin-left: 100px"></div>
+                <div class="sector sector-7 zoomTarget">
+                </div>
+                <div class="sNumb spnRotate180 sectorNumbfloor3" style="margin-left: 200px"></div>
+                <div class="sector sector-8 zoomTarget">
+                </div>
+                <div class="sNumb spnRotate180 sectorNumbfloor3" style="margin-left: 300px"></div>
+                <div class="sector sector-9 zoomTarget">
+                </div>
+                <div class="sNumb spnRotate180 sectorNumbfloor3" style="margin-left: 400px"></div>
+                <div class="sector sector-10 zoomTarget">
+                </div>
+              </div>
+              <div class="floor-2">
+                <div class="sNumb spnRotate180 sectorNumb">106-107</div>
+                <div class="sector sector-11 zoomTarget" data-sector-id="11" ng-class="{ 'nonactive': sectors[10].available == 0 }">
+                  <div class="seat-map-11">
+                  </div>
+                </div>
+                <div class="sNumb spnRotate180 sectorNumb" style="margin-left: 100px">105-106</div>
+                <div class="sector sector-12 zoomTarget" data-sector-id="12" ng-class="{ 'nonactive': sectors[11].available == 0 }">
+                  <div class="seat-map-12">
+                  </div>
+                </div>
+                <div class="sNumb spnRotate180 sectorNumb" style="margin-left: 200px;">104-105</div>
+                <div class="sector sector-13 zoomTarget"  >
+                </div>
+                <div class="sNumb spnRotate180 sectorNumb" style="margin-left: 300px;" >103-104</div>
+                <div class="sector sector-14 zoomTarget" data-sector-id="28" ng-class="{ 'nonactive': sectors[27].available == 0 }">
+                  <div class="seat-map-28">
+
+                  </div>
+                </div>
+                <div class="sNumb spnRotate180 sectorNumb" style="margin-left: 400px;" >102-103</div>
+                <div class="sector sector-15 zoomTarget">
+                </div>
+              </div>
+              <div class="floor-1">
+                <div class="sector sector-16 ">
+                </div>
+                <div class="sector sector-17 ">
+                </div>
+                <div class="sector sector-18 ">
+                </div>
+                <div class="sector sector-19 ">
+                </div>
+                <div class="sector sector-20 ">
+                </div>
+              </div>
+            </div>
+          </div>
+          <input type="hidden" id="availableSectorNames" value='<%= @event.sectors %>'>
+          <div class="section section-8">
+            <div class="dvgnrlCount">
+              <table>
+                <tr>
+                  <td><li style="list-style-type:square; color:red"> </li></td>
+                  <td><span><%= t('sold') %></span></td>
+                  <td ><span id="spngnrlSold">{{ allSectorsMetric.unavailable }}</span></td>
+                </tr>
+                <tr>
+                  <td><li style="list-style-type:square; color:yellow"> </li></td>
+                  <td><span><%= t('availableSeats') %></span></td>
+                  <td><span id="spngnrlBron">{{ allSectorsMetric.available }}</span></td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event_desc">
+
+      </div>
+      <div class="event_quote">
+        <div class="event_quote_pic fl">
+          <img src="/logo.png" alt="">
+        </div>
+        <div class="rightpartqioute">
+          <div class="cf"></div>
+          <p class="event_qoute_desc"><%= @event.description %></p>  </div>
+
+      </div>
+      </div>
+      <div class="event_upcoming">
+        <div class="event_upcoming_center">
+          <!-- <h2 class="event_upcoming_title" style="color: white;">Qarşıdan gələn tədbirlər</h2>
+
+          <div class="event_upcoming_list">
+            <div class="events_list_item fl">
+              <div class="events_list_item_pic">
+                <a href="event_opened.html"><img src="/assets/events/events1.jpg" alt=""></a>
+              </div>
+              <div class="events_list_item_pic_hover">
+                <p><a href="event_opened.html">Daha çox</a></p>
+              </div>
+              <div>
+                <div class="leftevpart">
+                  <ul class="events_list_item_date fl">
+                    <li class="first_date">21</li>
+                    <li>Fevral</li>
+                    <li>2016</li>
+                  </ul>
+                  <div class="events_list_item_line fl"></div>
+                </div>
+                <p class="events_list_item_desc">Men's / Women's Artistic Gymnastics Day 1 - (FIG WORLD CHALLENGE CUP AGF TROPHY ).</p>
+
+                <div class="cf"></div>
+              </div>
+            </div>
+            <div class="events_list_item fl">
+              <div class="events_list_item_pic">
+                <a href="event_opened.html"><img src="/assets/events/events2.jpg" alt=""></a>
+
+                <div class="events_list_item_pic_hover">
+                  <p><a href="event_opened.html">Daha çox</a></p>
+                </div>
+              </div>
+              <div>
+                <div class="leftevpart">
+                  <ul class="events_list_item_date fl">
+                    <li class="first_date">20</li>
+                    <li>Fevral</li>
+                    <li>2016</li>
+                  </ul>
+                  <div class="events_list_item_line fl"></div>
+                </div>
+                <p class="events_list_item_desc">Men's / Women's Artistic Gymnastics Day 1 - (FIG WORLD CHALLENGE CUP AGF TROPHY )</p>
+
+                <div class="cf"></div>
+              </div>
+            </div>
+            <div class="events_list_item fl">
+              <div class="events_list_item_pic">
+                <a href="event_opened.html"><img src="/Batut.jpg" alt=""></a>
+
+                <div class="events_list_item_pic_hover">
+                  <p><a href="event_opened.html">Daha çox</a></p>
+                </div>
+              </div>
+              <div>
+                <div class="leftevpart">
+                  <ul class="events_list_item_date fl">
+                    <li class="first_date">05</li>
+                    <li>Mart</li>
+                    <li>2016</li>
+                  </ul>
+                  <div class="events_list_item_line fl"></div>
+                </div>
+                <p class="events_list_item_desc">Trampoline Gymnastics </p>
+
+                <div class="cf"></div>
+              </div>
+            </div>
+            <div class="events_list_item fl" style="margin: 40px 0 0 0;">
+              <div class="events_list_item_pic">
+                <a href="event_opened.html"><img src="/Batut.jpg" alt=""></a>
+
+                <div class="events_list_item_pic_hover">
+                  <p><a href="event_opened.html">Daha çox</a></p>
+                </div>
+              </div>
+              <div>
+                <div class="leftevpart">
+                  <ul class="events_list_item_date fl">
+                    <li class="first_date">06</li>
+                    <li>Mart</li>
+                    <li>2016</li>
+                  </ul>
+                  <div class="events_list_item_line fl"></div>
+                </div>
+                <p class="events_list_item_desc">Trampoline Gymnastics</p>
+
+                <div class="cf"></div>
+              </div>
+            </div>
+            <div class="cf"></div>-->
+        </div>
+        <%= hidden_field_tag :authenticity_token, form_authenticity_token -%>
+
+        <script type="text/javascript">
+          $event_id = '<%= @event.id %>';
+          var $cart = $('#selected-seats'),
+              $counter = $('#counter'),
+              $total = $('#total');
+
+          $cart.on('click', '.cancel-cart-item', function () {
+            //let's just trigger Click event on the appropriate seat, so we don't have to repeat the logic here
+            clickedItem = $(this).parents('li:first').remove();
+            $('#' + clickedItem.data('seat-id')).click();
+          });
+
+          $('#checkout-button').click(function(){
+            authenticity_token = $('#authenticity_token').val();
+            console.log(authenticity_token);
+            $.post( "/online/buy_tickets", { event_id: $event_id, authenticity_token: authenticity_token })
+                .done(function( data ) {
+                  $sc.find('selected').status('available');
+                  console.log(data);
+                  order = data.TKKPG.Response.Order;
+                  window.location.href = order.URL + "?ORDERID=" + order.OrderID + "&SESSIONID=" + order.SessionID
+                })
+                .error(function(data){
+                  alert(data.message)
+                });
+          });
+
+        </script>
+  <% else %>
+      <!--<img src="/TrophyEvent.jpg" style="width: 100%;"/> -->
+  <% end %>
+  </div>

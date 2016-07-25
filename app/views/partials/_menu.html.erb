@@ -1,0 +1,9 @@
+<%
+lh = {'az' => 'Az', 'en' => 'En', 'ru' => 'Ru'}
+%> 
+
+<ul class="nav fl cf" style="padding-left: 150px;">
+	<% lh.each do |k,v| %>
+		<%= link_to v, params.merge({:locale => k}), :class => current_cl(I18n.locale.to_s) %>
+	<% end %>
+</ul>

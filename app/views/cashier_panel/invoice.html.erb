@@ -1,0 +1,9 @@
+<div class="event_opened_content">
+<h1>Invoice #<%= @invoice.id %></h1>
+<hr/>
+<ul>
+  <% @invoice.ticket_items.each do |ticket| %>
+    <li><a href="/cashier/ticket/show/<%= ticket.id %>.pdf">Ticket #<%= ticket.id %></a></li>
+  <% end %>
+</ul>
+    </div>

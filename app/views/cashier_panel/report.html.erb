@@ -1,0 +1,51 @@
+<div class="event_opened_content" style="margin-top:-25px">
+  <p style="text-align: center"><h1><b>Hesabat</b></h1>Kassir: <b><%= current_cashier.email %></b></p>
+  <% today = Time.now %>
+  Tarix: <%= today.day.to_s  + '/' + today.month.to_s + '/' + today.year.to_s %>
+  <hr/>
+  <table class="table table-condensed table-hover">
+    <thead>
+    <tr style="font-weight: 700">
+      <td>Tədbirin tarixi</td>
+      <td>Bilet sayı</td>
+      <td>Məbləğ</td>
+      <td>Endirimli</td>
+      <td>Endirimli məbləğ</td>
+      <td>Endirim məbləği</td>
+      <td>Ümumi məbləği</td>
+      <td>Bron</td>
+    </tr>
+    </thead>
+    <tbody>
+    <% @events.each do |event| %>
+        <tr>
+          <td><%= event.datetime.day.to_s  + '/' + event.datetime.month.to_s + '/' + event.datetime.year.to_s%></td>
+          <td><%= event.ticket_items.where({ created_at: Time.now.beginning_of_day..Time.now, cashier_id: current_cashier.id, is_invalid: false }).where.not({ ticket_type: 'discount' }).count %></td>
+          <td><%= event.ticket_items.where({ created_at: Time.now.beginning_of_day..Time.now, cashier_id: current_cashier.id, is_invalid: false }).where.not({ ticket_type: 'discount' }).sum(:price) %></td>
+          <td><%= event.ticket_items.where({ created_at: Time.now.beginning_of_day..Time.now, cashier_id: current_cashier.id, is_invalid: false, ticket_type: 'discount' }).count %></td>
+          <td><%= event.ticket_items.where({ created_at: Time.now.beginning_of_day..Time.now, cashier_id: current_cashier.id, is_invalid: false, ticket_type: 'discount' }).sum(:real_price) - event.ticket_items.where({ created_at: Time.now.beginning_of_day..Time.now, cashier_id: current_cashier.id, is_invalid: false, ticket_type: 'discount' }).sum(:price) %></td>
+          <td><%= event.ticket_items.where({ created_at: Time.now.beginning_of_day..Time.now, cashier_id: current_cashier.id, is_invalid: false, ticket_type: 'discount' }).sum(:price) %></td>
+          <td><%= event.ticket_items.where({ created_at: Time.now.beginning_of_day..Time.now, cashier_id: current_cashier.id, is_invalid: false }).sum(:price) %></td>
+          <td><%= event.bron_tickets.where({ created_at: Time.now.beginning_of_day..Time.now, opened_by: current_cashier.id }).count %></td>
+        </tr>
+    <% end %>
+    <tr>
+      <td>Ümumi</td>
+      <td><%= @ticket_items.where({ created_at: Time.now.beginning_of_day..Time.now, cashier_id: current_cashier.id, is_invalid: false }).where.not({ ticket_type: 'discount' }).count %></td>
+      <td><%= @ticket_items.where({ created_at: Time.now.beginning_of_day..Time.now, cashier_id: current_cashier.id, is_invalid: false }).where.not({ ticket_type: 'discount' }).sum(:price) %></td>
+      <td><%= @ticket_items.where({ created_at: Time.now.beginning_of_day..Time.now, cashier_id: current_cashier.id, is_invalid: false, ticket_type: 'discount' }).count %></td>
+      <td><%= @ticket_items.where({ created_at: Time.now.beginning_of_day..Time.now, cashier_id: current_cashier.id, is_invalid: false, ticket_type: 'discount' }).sum(:real_price) - @ticket_items.where({ created_at: Time.now.beginning_of_day..Time.now, cashier_id: current_cashier.id, is_invalid: false, ticket_type: 'discount' }).sum(:price) %></td>
+      <td><%= @ticket_items.where({ created_at: Time.now.beginning_of_day..Time.now, cashier_id: current_cashier.id, is_invalid: false, ticket_type: 'discount' }).sum(:price) %></td>
+      <td><%= @ticket_items.where({ created_at: Time.now.beginning_of_day..Time.now, cashier_id: current_cashier.id, is_invalid: false }).sum(:price) %></td>
+      <td><%= @bron_tickets.where({ created_at: Time.now.beginning_of_day..Time.now, opened_by: current_cashier.id }).count %></td>
+    </tr>
+    </tbody>
+  </table>
+  Ümumi məbləğ: <%= @ticket_items.sum(:price) %>
+  <br/>
+  <br/>
+  <p>Imza Kassir:</p><br/>
+  <p>Imza Inkosator:</p><br/>
+  <p>Imza Muhasib:</p>
+
+</div>

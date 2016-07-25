@@ -1,0 +1,58 @@
+en:
+    hello: "Hello world"
+    about_event: "About event"
+
+    # buy_tickets.html.erb
+    buySelectedTickets: "Buy selected tickets"
+    chosenPlaces: "Selected seats"
+    priceAll: "Total sum:"
+    sold: "Sold:"
+    reserved: "Reserved:"
+    availableSeats: "Available:"
+    sale: "Sale"
+    mainPage: "Main page"
+    cancelSelection: "cancel"
+
+    # event.html.erb
+    aboutEvent: "About event"
+    date: "Date: "
+    place: "Place: "
+    competition: "Competition: "
+    additionalInfo: "Additional information:  "
+    mga: "National Gymnastics Arena"
+    wantToBuyTicket: "I want to buy ticket to this event."
+    viewMore: "View more"
+
+    # competition.html.erb
+    events: "Select an event"
+    competitionProgram: "Competition Program"
+
+    # footer.html.erb
+    contact: "Contacts"
+    operatingHoursLabel: "OPERATING HOURS:"
+    operatingHours: "Monday to Friday 10h00 to 19h00. Saturdays and Sundays 12h00 to 00h00."
+    addressLabel: "ADDRESS:"
+    address: "National Gymnastics Arena 108 Heydar Aliyev Ave., Baku, AZ1029, Azerbaijan"
+    telephone: "TELEPHONE:"
+    fax: "FAX:"
+
+    # competitions.html.erb
+    upcomingEvents: "Upcoming events"
+    aboutCompetition: "About competition"
+    listofCompetitions: "List of Competitions"
+
+    #checkout_modal.erb
+    modalHeader: "Please provide your information to send you tickets after checkout"
+    writeYourInfo: "Write down your information: "
+    email: "Email address"
+    phone: "Phone number"
+    acceptingTerms: " I accept terms and conditions"
+    checkout: "Checkout"
+    cancelPayment: "Cancel"
+    phone: "Telephone"
+    phonenumber: "number"
+
+    #approved.erb
+    success: "Successfully completed"
+    paymentReceived: "Payment received. You will get your tickets with email soon."
+    gotoEvents: "Go to events"

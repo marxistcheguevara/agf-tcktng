@@ -1,0 +1,43 @@
+ru:
+    hello: "salam Dünya"
+    about_event: "Tədbir haqqında"
+
+    # buy_tickets.html.erb
+    buySelectedTickets: "Seçilmiş biletləri al"
+    chosenPlaces: "Seçİlmİş yerlər "
+    priceAll: "Ümumİ məbləğ:"
+    sold: "Satılıb:"
+    reserved: "Bron edilib:"
+    availableSeats: "Boş yerlər:"
+    discount: "Endirim"
+    discountedPrice: "Endirimli qiymət"
+    sale: "Satış"
+    discountPercent: "Endirim faizini yazın"
+    mainPage: "Əsas səhifə"
+
+    # event.html.erb
+    aboutEvent: "Tədbir haqqında"
+    date: "Tarix: "
+    place: "Məkan: "
+    competition: "Yarış: "
+    additionalInfo: "Əlavə məlumat:  "
+    mga: "Milli Gimnastika Arenası"
+    wantToBuyTicket: "Bu yarış üçün bilet almaq istəyirəm."
+
+    # competition.html.erb
+    events: "Tədbirlər"
+    competitionProgram: "Yarışın Proqramı"
+
+    # footer.html.erb
+    contact: "Əlaqə"
+    operatingHoursLabel: "İŞ SAATLARI:"
+    operatingHours: "Bazar ertəsi - Cümə günləri 10:00-dan 19:00-dək. Şənbə və Bazar günləri 12:00-dan 00:00-dək."
+    addressLabel: "ÜNVAN:"
+    address: "Milli Gimnastika Arenası Heydər Əliyev prospekti, 108 /AZ 1029 Keçid: «Koroğlu» metrostansiyası"
+    telephone: "TELEFON:"
+    fax: "FAKS:"
+
+    # competitions.html.erb
+    upcomingEvents: "Gözlənilən tədbirlər"
+    aboutCompetition: "Yarış haqqında"
+

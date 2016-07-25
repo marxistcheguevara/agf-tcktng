@@ -1,0 +1,16 @@
+//= require arena/jquery.seat-charts.js
+//= require arena/jquery.zoomooz-helpers.js
+//= require arena/jquery.zoomooz-anim.js
+//= require arena/jquery.zoomooz-core.js
+//= require arena/jquery.zoomooz-zoomTarget.js
+//= require arena/jquery.zoomooz-zoomButton.js
+//= require arena/jquery.zoomooz-zoomContainer.js
+//= require arena/purecssmatrix.js
+//= require arena/sylvester.src.stripped.js
+//= require jquery_ujs
+//= require dataTables/jquery.dataTables
+//= require dataTables/extras/dataTables.responsive
+//= require dataTables/bootstrap/3/jquery.dataTables.bootstrap
+//= require printPage.js
+//= require angular.modal.js
+//= require angular-ui-bootstrap-tpls

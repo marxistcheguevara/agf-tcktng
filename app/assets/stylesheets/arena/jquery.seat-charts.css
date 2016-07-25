@@ -1,0 +1,115 @@
+div.seatCharts-container {
+	/*min-width: 700px;*/
+}
+div.seatCharts-cell {
+	height: 3px;
+	width: 3px;
+	float: left;
+	text-align: center;
+	outline: none;
+	font-size: 2px;
+	line-height: 3px;
+	color: white;
+    margin-left:1px;
+    border-radius: 1px;
+}
+
+div.seatCharts-cell:hover{
+    background-color: #ff0;
+}
+div.seatCharts-seat {
+	color: white;
+	cursor: default;
+}
+div.seatCharts-seat:focus {
+	border: none;
+}
+/*
+.seatCharts-seat:focus {
+	outline: none;
+}
+*/
+
+div.seatCharts-space {
+	background-color: white;
+    font-weight:500;
+    font-size:15px;
+}
+div.seatCharts-row {
+	height: 4px;
+}
+
+div.seatCharts-row:after {
+	clear: both;
+}
+
+
+div.seatCharts-seat.focused {
+	background-color: #6db131;
+}
+
+div.seatCharts-seat.available {
+	background-color: #6db131;
+}
+
+div.seatCharts-seat.disabled {
+	background-color: #000000;
+}
+
+div.seatCharts-seat.bron {
+	background-color: yellow !important;
+    color: black;
+}
+
+div.seatCharts-seat.unavailable {
+	background-color: red;
+	cursor: not-allowed;
+}
+
+div.seatCharts-seat.sold {
+    background-color: red;
+    cursor: not-allowed;
+}
+
+div.seatCharts-seat.disabled {
+    background-color: #c0c0c0;
+    cursor: not-allowed;
+}
+
+div.seatCharts-seat.busy {
+    background-color: black !important;
+    cursor: not-allowed;
+    color: #fff;
+}
+
+
+div.seatCharts-seat.bron.sold {
+    background-color: red !important;
+    cursor: not-allowed;
+}
+
+
+ul.seatCharts-legendList {
+	list-style: none;
+}
+li.seatCharts-legendItem {
+	margin-top: 0;
+	line-height: 3px;
+}
+
+div.seatCharts-seat.selected {
+    background-color: white;
+    color: black;
+}
+
+div.seatCharts-seat.bron.selected {
+    background-color: white !important;
+    color: black;
+}
+
+div.seatCharts-seat.unavailable.gray{
+    background-color: #bebebe;
+}
+div.seatCharts-seat.available.dark-green{
+    background-color: darkgreen;
+}

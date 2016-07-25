@@ -1,0 +1,87 @@
+
+<style>
+  <% unless (@ticket.event.ticketimage.nil? || @ticket.event.ticketimage == "") %>
+  #dvPrintMain
+  {
+    background-image: url('<%= Rails.root.join('app', 'assets', 'images', @ticket.event.ticketimage)%>');
+  }
+  <% end %>
+
+    @font-face {
+        font-family: 'Amino';
+        font-style: normal;
+        font-weight: 300;
+        src: url('<%= Rails.root.join('app', 'assets', 'fonts', 'AminoA.ttf') %>') format('truetype')
+    }
+    @font-face {
+        font-family: 'AminoM';
+        font-style: normal;
+        font-weight: 300;
+        src: url('<%= Rails.root.join('app', 'assets', 'fonts', 'Aminom.ttf') %>') format('truetype')
+    }
+    span {
+        color: #244762;
+    }
+
+    .table{
+        float: left;
+        width: 110px;
+        color: #59C7BA;
+        font-family: Amino;
+        font-size: 14px;
+    }
+</style>
+    <img  />
+    <div id="dvPrintMain" style=" padding:615px 5px 0 0px;height:250px;width:350px;margin:auto;">
+      <div style="float:center">
+        <!--<h1 style="margin-top: 0;">-->
+        <!--<%= @ticket.event.name %>
+      #59C7BA
+      #244762
+      -->
+        <!--</h1>-->
+        <table class="table" style=" padding: 0; margin-left: -6px;">
+          <tr>
+            <td>Giriş</td>
+            <td><span><%= @ticket.entrance %></span></td>
+          </tr>
+          <tr>
+            <td>Sektor</td>
+            <td><span><%= @ticket.sector %></span></td>
+          </tr>
+          <tr>
+            <td>Sıra</td>
+            <td><span><%= @ticket.row %></span></td>
+          </tr>
+          <tr>
+            <td>Yer</td>
+            <td><span><%= @ticket.column %></span></td>
+          </tr>
+        </table>
+        <p style="float:right;text-align: center;margin: 35px -15px 0 0">
+          <%= wicked_pdf_image_tag_for_public( @barcode ) %><br/>
+          <%= @ticket.seat_id.to_s + '_' + @ticket.event_id.to_s %>
+        </p>
+        <div style="clear: both;"></div>
+
+        <table class="table" style="float:right;margin: 20px 10px 0 0; font-family: AminoM !important;">
+          <tr>
+            <td>Giriş</td>
+            <td><span><%= @ticket.entrance %></span></td>
+          </tr>
+          <tr>
+            <td>Sektor</td>
+            <td><span><%= @ticket.sector %></span></td>
+          </tr>
+          <tr>
+            <td>Sıra</td>
+            <td><span><%= @ticket.row %></span></td>
+          </tr>
+          <tr>
+            <td>Yer</td>
+            <td><span><%= @ticket.column %></span></td>
+          </tr>
+        </table>
+      </div>
+
+    </div>

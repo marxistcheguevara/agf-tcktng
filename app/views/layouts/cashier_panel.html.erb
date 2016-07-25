@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gimnasio | Events</title>
+
+  <link href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css' rel='stylesheet' type='text/css'>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" type="text/javascript"></script>
+  <%= stylesheet_link_tag    'main', media: 'all', 'data-turbolinks-track' => true %>
+  <%= javascript_include_tag 'main', 'data-turbolinks-track' => true %>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js" type="text/javascript"></script>
+
+  <%= javascript_include_tag 'arena/script', 'data-turbolinks-track' => true %>
+  <%= stylesheet_link_tag    'main', media: 'all', 'data-turbolinks-track' => true %>
+
+
+  <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600&amp;subset=latin,latin-ext'
+        rel='stylesheet' type='text/css'>
+</head>
+<body>
+<!-- Header Section Start -->
+<div class="page_header">
+  <div class="center">
+    <img class="page_header_logo fl" src="/images/events_logo.png" alt="">
+    <h1 class="page_header_title fl">Sizə xidmət göstərir <%= current_cashier.name %> <%= current_cashier.surname %></h1>
+    <ul class="page_header_nav fr">
+      <li><a href="/cashier/sell_ticket">Bilet satışı</a></li>
+      <!--<li><a href="/cashier/my_tickets">My Tickets</a></li>-->
+      <li><a href="/cashier/report">Hesabat</a></li>
+      <% if cashier_signed_in? %>
+          <li><%= link_to('Sistemdən çıxış', destroy_cashier_session_path) %> (<%= current_cashier.email %>)</li>
+      <% end %>
+    </ul>
+    <div class="cf"></div>
+  </div>
+</div>
+
+<p class="notice" style="width: 100%; text-align: center; color: blue;"><%= notice %></p>
+<p class="alert" style="width: 100%; text-align: center; color: red;"><%= alert %></p>
+
+
+<%= yield %>
+
+
+<!-- JS Scripts -->
+<%= javascript_include_tag 'end', 'data-turbolinks-track' => true %>
+</body>
+</html>

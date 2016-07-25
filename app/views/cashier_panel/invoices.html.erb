@@ -1,0 +1,9 @@
+<div class="event_opened_content">
+  <h1>All invoices</h1>
+  <hr/>
+  <ul>
+    <% @invoices.each do |invoice| %>
+        <li><h4><a href="/cashier/invoicepdf/<%= invoice.id %>.pdf">Invoice #<%= invoice.id %> ( <%= invoice.created_at %> ) - <%= invoice.ticket_items.count %> bilet</a></h4></li>
+    <% end %>
+  </ul>
+</div>

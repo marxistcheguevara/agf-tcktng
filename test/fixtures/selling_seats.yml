@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  event_id: 
+  seat_id: 
+  color_id: 
+  price: 
+  ticket_type_id: 
+
+two:
+  event_id: 
+  seat_id: 
+  color_id: 
+  price: 
+  ticket_type_id: 

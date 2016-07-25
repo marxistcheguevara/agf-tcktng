@@ -1,0 +1,893 @@
+<link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+<script>
+  $(function() {
+    $( document ).tooltip({
+      position: {
+        my: "center bottom-20",
+        at: "center top",
+        using: function( position, feedback ) {
+          $( this ).css( position );
+          $( "<div>" )
+              .addClass( "arrow" )
+              .addClass( feedback.vertical )
+              .addClass( feedback.horizontal )
+              .appendTo( this );
+        }
+      }
+    });
+  });
+  $(function(){
+    $( "#dialog" ).dialog({
+      autoOpen: false,
+      show: {
+        effect: "blind",
+        duration: 1000
+      },
+      hide: {
+        effect: "explode",
+        duration: 1000
+      },
+    })
+  })
+</script>
+<style>
+  .ui-tooltip, .arrow:after {
+    background: rgba(251,221,171, 1);
+  }
+  .ui-tooltip {
+    padding: 10px 20px;
+    color: rgba(0, 74, 99, 0.58);
+    border-radius: 7px;
+    font: bold 14px "Helvetica Neue", Sans-Serif;
+    text-transform: uppercase;
+    box-shadow: 2px 1px 9px -1px grey;
+  }
+  .arrow {
+    width: 70px;
+    height: 16px;
+    overflow: hidden;
+    position: absolute;
+    left: 50%;
+    margin-left: -35px;
+    bottom: -16px;
+  }
+  .arrow.top {
+    top: -16px;
+    bottom: auto;
+  }
+  .arrow.left {
+    left: 20%;
+  }
+  .arrow:after {
+    content: "";
+    position: absolute;
+    left: 20px;
+    top: -20px;
+    width: 25px;
+    height: 25px;
+    box-shadow: 6px 5px 9px -9px black;
+    -webkit-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    transform: rotate(45deg);
+  }
+  .arrow.top:after {
+    bottom: -20px;
+    top: auto;
+  }
+  #dialog
+  {
+    width:200px;
+    padding:5px;
+  }
+
+  .arena.unsell .sold:after {
+    content: "x";
+    border: 1px solid #c2c2c2;
+    padding: 1px 2px;
+    top: -40px;
+    background-color: #605F61;
+    left: 198px;
+    border-radius: 20px;
+    cursor: pointer;
+  }
+  .active-unsell {
+    background-color: red;
+  }
+</style>
+<script type="text/javascript">
+  $(document).ready(function(){
+    $('div#dialog').on('dialogclose', function(event) {
+      $('#spnDiscount').empty();
+      $('#spnDiscountedprice').empty();
+      $('#tbxpercentDiscount').val('');
+    });
+    $(".size").click(function(){
+      $('.arena').trigger('click');
+    });
+    $('#tbxpercentDiscount').on('input', function(){
+      var total = parseInt($('#total').html());
+      var percentDiscount = parseInt($('#tbxpercentDiscount').val());
+      if(percentDiscount != null || ' ')
+      {
+        var discount = (total * percentDiscount) / 100 ;
+        var reminder = total - discount;
+        $('#spnDiscount').empty();
+        $('#spnDiscount').append(discount + ' AZN');
+        $('#spnDiscountedprice').empty();
+        $('#spnDiscountedprice').append(reminder + ' AZN');
+      }
+
+    }) ;
+
+    $( "#unsell-button" ).click(function() {
+      $( ".arena" ).toggleClass( "unsell" );
+      $( this).toggleClass( "active-unsell" );
+    });
+
+    $( ".seatCharts-seat" ).click(function(event) {
+
+      event.stopPropagation();
+      alert('clicked');
+      if ($(this).hasClass("sold")) {
+        alert(' sold clicked');
+      }
+
+      //alert($( this).parent().id());
+    });
+
+    //Turning on and off sectors
+    var sectorNames =   $('#availableSectorNames').val().replace(/ /g,'').split(',');
+    if (sectorNames.length > 0 && sectorNames != '' && sectorNames != null)
+    {
+      sectorNames.forEach(function (name){
+        var sector;
+        if(name.indexOf('-') < 0)
+        {
+          sector = $('.oddNumb:contains('+ name +')');
+        }
+        else
+        {
+          sector = $('.sNumb:contains('+ name +')');
+        }
+          sector.addClass('availableSector');
+          sector.next('.sector').addClass('availableSector')
+          if(sector.hasClass('coneNumb'))
+            {
+              sector.nextAll('.cone').first().addClass('availableSector');
+              sector.nextAll('.cone').first().find('div').find('div[class*="cs'+ name.substr(0,1) +'"]').addClass('availableSector');
+            }
+        else
+          {
+            sector.parent().addClass('availableSector');
+          }
+
+      });
+
+      $('.sNumb, .oddNumb, .sector').not('.availableSector').remove();
+      $('div[class*="floor"]').not('.availableSector').remove();
+    }
+    // This method will get all selling seats details when document is ready
+    var sectorIDs = $('.sector').map(function() { return $(this).attr('data-sector-id')}).get().join(',').split(',');
+    var sold = 0;
+    var bron = 0;
+    var available = 0;
+    $.each(sectorIDs, function(index, value)
+    {
+      jQuery.get("/cashier/showSectorDetails/" + $event_id + '/' + value)
+          .done(function(data)
+          {
+            $('#spngnrlSold').html("");
+            $('#spngnrlBron').html("");
+            $('#spngnrlAvailable').html("");
+            sold += data.sold;
+            $('#spngnrlSold').append(sold);
+            bron += data.bron;
+            $('#spngnrlBron').append(bron);
+            available += data.available_seats;
+            $('#spngnrlAvailable').append(available);
+
+            // Making red all-sold sectors
+
+             if(data.available_seats == '0')
+             {
+               if( $( "div[data-sector-id='"+ value +"']").prev().hasClass('coneNumb'))
+               {
+                 $( "div[data-sector-id='"+ value +"']").prev().css('color', 'rgb(216, 40, 40)');
+                 $( "div[data-sector-id='"+ value +"']").nextAll('.cone').first().find('div').find('div[class*="'+ value +'"]').find('div').css('border-color', 'rgba(255, 0, 0, 0.69)');
+               }
+               else
+               {
+                 $( "div[data-sector-id='"+ value +"']").css('background-color', 'rgba(255, 0, 0, 0.69)');
+               }
+
+             }
+          })
+    });
+
+
+
+    // Adding class according to evendate (add 'E' character before to avoid classname error)
+    var arenaclass = $('#hdnEventdate').val()
+        //.split("(")[0]
+        .replace("/", "");
+    arenaclass = arenaclass.replace(/'/g, '');
+    arenaclass = arenaclass.replace(/-/g, '');
+    arenaclass = arenaclass.replace(/ /g, '').toUpperCase();
+    $('.arena').addClass('E' + arenaclass);
+
+    // Make sectors available for selling sorting by date
+    var eventdate = $('#hdnEventdate').val();
+
+  })
+</script>
+<div class="event_opened_content">
+  <% if @event %>
+     + <span style="font-size:15px; margin-bottom: 5px;">(<%= current_cashier.intervals.first.to %> - <%= (current_cashier.intervals.first.to - current_cashier.intervals.first.interval_number)%>) bilet satışda </span>
+  <% end %>
+  <h2>Tədbir seçin</h2>
+  <% @events.each do |event| %>
+      <div class="event_upcoming_list">
+        <div class="events_list_item fl">
+          <div class="events_list_item_pic">
+            <a href="event_opened.html"><img src="<%= event.image_url %>" alt=""></a>
+            <!--<a href="event_opened.html"><img src="/TrophyEventCut.jpg" alt=""></a> -->
+          </div>
+          <div class="events_list_item_pic_hover">
+            <p><a href="/cashier/sell_ticket/<%= event.id %>">Daha çox</a></p>
+          </div>
+          <div>
+            <div class="leftevpart">
+              <ul class="events_list_item_date fl">
+                <li class="first_date"><%= event.datetime.strftime("%d") %></li>
+                <li><%= event.datetime.strftime("%B").sub('February', "Fevral").sub('March', "Mart")%></li>
+                <li><%= event.datetime.strftime("%Y") %></li>
+              </ul>
+              <div class="events_list_item_line fl"></div>
+            </div>
+            <p class="events_list_item_desc"><%= event.name %> - (<%= event.competition.name %>)</p>
+
+            <div class="cf"></div>
+          </div>
+        </div>
+      </div>
+  <% end %>
+  <% if @event %>
+      <hr>
+      <input type="hidden" value="<%= @event.datetime.strftime("%d") %>" id="hdnEventdate" />
+      <h1 style="text-transform: capitalize;  display: inline;" id="eventName"><%= @event.name %></h1><h1 style="text-transform: capitalize; display: inline;"><%= @event.datetime.strftime(" %d") %><%= @event.datetime.strftime(" %B").sub('February', "Fevral").sub('March', "Mart").sub('January', "Yanvar").sub('April', "Aprel").sub('June', "İyun").sub('July', "İyun").sub('August', "Avqust").sub('September', "Sentyabr").sub('October', "Oktyabr").sub('November', "Noyabr").sub('December', "Dekabr")%></h1><br>
+      <div style="width: 960px; margin-top: 10px; height: 40px;">
+        <% if current_cashier.sell %><a id="checkout-button" class="select_program_button" style="font-size: 18px;float:left;display:block;padding: 5px;margin:0;text-align:center;">Satış &raquo;</a> <% end %>
+        <% if current_cashier.bron %><a id="bron-button" class="select_program_button" style="font-size: 18px;float:left;display:block;padding: 5px;margin:0;text-align:center; margin-left: 15px;">Bron &raquo;</a> <% end %>
+        <% if current_cashier.discount %><a id="discount-button" class="select_program_button" style="font-size: 18px;float:left;display:block;padding: 5px;margin:0;text-align:center;margin-left: 15px;">Endirim &raquo;</a> <% end %>
+        <% if current_cashier.invitation %><a id="invitation-button" class="select_program_button" style="font-size: 18px;float:left;display:block;padding: 5px;margin:0;text-align:center;margin-left: 15px;">Dəvətnamə &raquo;</a> <% end %>
+        <% if current_cashier.unsell %><a id="unsell-button" class="select_program_button" style="font-size: 18px;float:left;display:block;padding: 5px;margin:0;margin-left: 15px;text-align:center; ">Satışa qaytar &raquo;</a> <% end %>
+        <a id="" class="btnPrint" style="display:none;">Print &raquo;</a>
+      </div>
+      <h2 class="event_opened_title">Bron məlumatları</h2>
+
+      <div class="booking-details" style="margin-left: 10px;margin-bottom: 10px;">
+        <h3 id="selectedPlacestotal">Seçİlmİş yerlər (<span id="counter">0</span>) Ümumİ məbləğ: <b><span id="total">0</span> AZN</b>:</h3>
+        <div style="min-height:60px; margin-bottom:15px">
+          <ul id="selected-seats"></ul>
+        </div>
+
+        <div id="legend" style="float: right"></div>
+      </div>
+      <div id="dvDefaultView" style="">
+        <button class="size btn btn-success">
+          <span class="glyphicon glyphicon-zoom-out" style="font-size:18px"></span>
+        </button>
+      </div>
+      <div id="arena" class="arena zoomViewport">
+        <div class="zoomContainer">
+
+          <div class="oddNumb coneNumb leftopconefloor2" >117</div>
+          <div class="sector sector-37 zoomTarget" data-sector-id="30"></div>
+          <div class="sNumb coneNumb leftopconefloor4">318-317</div>
+          <div class="sector sector-40 zoomTarget" data-sector-id="31"></div>
+          <div class="section section-1 cone">
+            <div class="section-1-sectors">
+              <div class="cs3 dtsctr31 floor-4">
+                <div class="trapezoid"></div>
+              </div>
+              <div class="cs2 floor-3">
+                <div class="trapezoid"></div>
+              </div>
+              <div class="cs1 dtsctr30 floor-2">
+                <div id="s1fl2trpzd" class="trapezoid"></div>
+              </div>
+            </div>
+          </div>
+          <!-- sector divs are outside the cone here -->
+          <div class="sNumb coneNumb sectorNumbfloor2cone3">112-111</div>
+          <div class="sector sector-33 zoomTarget" data-sector-id="6"></div>
+          <div class="sNumb coneNumb sectorNumbfloor4cone3">312-311</div>
+          <div class="sector sector-34 zoomTarget" data-sector-id="20"></div>
+          <div class="section section-3 cone">
+            <div class="section-3-sectors">
+              <div class="cs3 dtsctr20 floor-4">
+                <div class="trapezoid"></div>
+              </div>
+              <div class="cs2 floor-3">
+                <div class="trapezoid"></div>
+              </div>
+              <div class="cs1 dtsctr6 floor-2">
+                <div id="s3fl2trpzd" class="trapezoid"></div>
+              </div>
+            </div>
+          </div>
+          <!-- sector divs are outside the cone here -->
+          <div class="sNumb coneNumb sectorNumbfloor2cone5">107-108</div>
+          <div class="sector sector-35 zoomTarget" data-sector-id="10"></div>
+          <div class="sNumb coneNumb sectorNumbfloor4cone5">308-307</div>
+          <div class="sector sector-36 zoomTarget" data-sector-id="16" ></div>
+          <div class="section section-5 cone">
+            <div class="section-5-sectors">
+              <div class="cs3 dtsctr16 floor-4">
+                <div class="trapezoid"></div>
+              </div>
+              <div class="cs2 floor-3">
+                <div class="trapezoid"></div>
+              </div>
+              <div class="cs1 dtsctr10 floor-2">
+                <div id="s5fl2trpzd" class="trapezoid"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- sector divs are outside the cone here -->
+          <div style="margin-top: 484px;transform: rotate(45deg);z-index: 14;margin-left: 160px;display: block;"  class="sNumb oddNumb coneNumb leftbottomconefloor2 spnRotate180" style="z-index:-5">102</div>
+          <div class="sector sector-42 zoomTarget" data-sector-id="29"></div>
+          <div style="
+          transform: rotate(45deg);
+              margin-top: 533px;
+              margin-left: 88px;
+              color: #66B5B8;
+              z-index: 1;
+          " class="sNumb coneNumb leftbottomconefloor4 spnRotate180">302-301</div>
+          <div class="sector sector-41 zoomTarget" data-sector-id="32"></div>
+          <div class="section section-7 cone">
+            <div class="section-7-sectors">
+              <div class="cs3 dtsctr32 floor-4">
+                <div class="trapezoid"></div>
+              </div>
+              <div class="cs2 floor-3">
+                <div class="trapezoid"></div>
+              </div>
+              <div class="cs1 dtsctr29 floor-2">
+                <div class="trapezoid"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section section-2">
+            <div class="section-2-sectors">
+              <div class="floor-4">
+                <div class="sNumb sectorNumbfloor4"  >317-316</div>
+                <div class="sector sector-1 zoomTarget" data-sector-id="25" >
+
+                </div>
+                <div class="sNumb sectorNumbfloor4" style="margin-left:100px">316-315</div>
+                <div class="sector sector-2 zoomTarget" data-sector-id="24">
+
+                </div>
+                <div class="sNumb sectorNumbfloor4" style="margin-left:200px">315-314</div>
+                <div class="sector sector-3 zoomTarget" data-sector-id="23">
+                  <div class="seat-map-23">
+
+                  </div>
+                </div>
+                <div class="sNumb sectorNumbfloor4"  style="margin-left:300px" >314-313</div>
+                <div class="sector sector-4 zoomTarget"  data-sector-id="22">
+
+
+                  <div class="seat-map-22">
+
+                  </div>
+                </div>
+                <div class="sNumb sectorNumbfloor4" style="margin-left:400px">313-312</div>
+                <div class="sector sector-5 zoomTarget" data-sector-id="21">
+
+                  <div class="seat-map-21">
+
+                  </div>
+                </div>
+              </div>
+              <div class="floor-3">
+                <div class="sNumb sectorNumbfloor3"></div>
+                <div class="sector sector-6 zoomTarget">
+                </div>
+                <div class="sNumb sectorNumbfloor3" style="margin-left:100px"></div>
+                <div class="sector sector-7 zoomTarget">
+                </div>
+                <div class="sNumb sectorNumbfloor3" style="margin-left:200px"></div>
+                <div class="sector sector-8 zoomTarget">
+                </div>
+                <div class="sNumb sectorNumbfloor3" style="margin-left:300px"></div>
+                <div class="sector sector-9 zoomTarget">
+                </div>
+                <div class="sNumb sectorNumbfloor3" style="margin-left:400px"></div>
+                <div class="sector sector-10 zoomTarget">
+                </div>
+              </div>
+              <div class="floor-2">
+                <div class="sNumb sectorNumb">117-116</div>
+                <div class="sector sector-11 zoomTarget" data-sector-id="1">
+
+                </div>
+                <div class="sNumb sectorNumb" style="margin-left: 100px">116-115</div>
+                <div class="sector sector-12 zoomTarget" data-sector-id="2">
+
+                  <div class="seat-map-2">
+                  </div>
+                </div>
+                <div class="sNumb sectorNumb" style="margin-left: 200px">115-114</div>
+                <div class="sector sector-13 zoomTarget" data-sector-id="3">
+
+                  <div class="seat-map-3">
+                  </div>
+                </div>
+                <div class="sNumb sectorNumb" style="margin-left: 300px">114-113</div>
+                <div class="sector sector-14 zoomTarget" data-sector-id="4">
+
+                  <div class="seat-map-4">
+
+                  </div>
+                </div>
+                <div class="sNumb sectorNumb" style="margin-left: 400px">113-112</div>
+                <div class="sector sector-15 zoomTarget" data-sector-id="5">
+
+                  <div class="seat-map-5">
+
+                  </div>
+                </div>
+              </div>
+              <div class="floor-1">
+                <div class="sector sector-16 "></div>
+                <div class="sector sector-17 "></div>
+                <div class="sector sector-18 "></div>
+                <div class="sector sector-19 "></div>
+                <div class="sector sector-20 "></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section section-4">
+            <div class="section-4-sectors">
+              <div class="floor-4">
+                <div class="sNumb section4floor4">311-310</div>
+                <div class="sector sector-21 zoomTarget" data-sector-id="19">
+                  <div class="seat-map-19">
+                  </div>
+                </div>
+                <div class="sNumb section4floor4" style="margin-left: 92px;">310-309</div>
+                <div class="sector sector-22 zoomTarget" data-sector-id="18">
+                  <div class="seat-map-18">
+                  </div>
+                </div>
+                <div class="sNumb section4floor4" style="margin-left: 175px;">309-308</div>
+                <div class="sector sector-23 zoomTarget" data-sector-id="17">
+                  <div class="seat-map-17">
+                  </div>
+                </div>
+              </div>
+              <div class="floor-3">
+                <div class="sNumb section4floor3"></div>
+                <div class="sector sector-24 zoomTarget">
+                </div>
+                <div class="sNumb section4floor3" style="margin-left: 92px;"></div>
+                <div class="sector sector-25 zoomTarget">
+                </div>
+                <div class="sNumb section4floor3" style="margin-left: 175px;"></div>
+                <div class="sector sector-26 zoomTarget">
+                </div>
+              </div>
+              <div class="floor-2">
+                <div class="sNumb section4floor2">111-110</div>
+                <div class="sector sector-27 zoomTarget" data-sector-id="7">
+                  <div class="seat-map-7">
+                  </div>
+                </div>
+                <div class="sNumb section4floor2" style="margin-left:77px">110-109</div>
+                <div class="sector sector-28 zoomTarget" data-sector-id="8">
+                  <div class="seat-map-8">
+                  </div>
+                </div>
+                <div class="sNumb section4floor2" style="margin-left:161px">109-108</div>
+                <div class="sector sector-29 zoomTarget" data-sector-id="9">
+                  <div class="seat-map-9">
+                  </div>
+                </div>
+              </div>
+              <div class="floor-1">
+                <div class="sector sector-30 " data-sector-id="10">
+                </div>
+                <div class="sector sector-31 ">
+                </div>
+                <div class="sector sector-32 ">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="section section-6">
+            <div class="section-6-sectors">
+              <div class="floor-4">
+                <div class="sNumb spnRotate180 sectorNumbfloor4">306-307</div>
+                <div class="sector sector-1 zoomTarget " data-sector-id="15" >
+
+                  <div class="seat-map-15">
+
+                  </div>
+                </div>
+                <div class="sNumb spnRotate180 sectorNumbfloor4" style="margin-left: 100px">305-306</div>
+                <div class="sector sector-2 zoomTarget" data-sector-id="14">
+
+                  <div class="seat-map-14">
+                  </div>
+                </div>
+                <div class="sNumb spnRotate180 sectorNumbfloor4" style="margin-left: 200px">304-305</div>
+                <div class="sector sector-3 zoomTarget" data-sector-id="13"></div>
+                <div class="sNumb spnRotate180 sectorNumbfloor4" style="margin-left: 300px">303-304</div>
+                <div class="sector sector-4 zoomTarget" data-sector-id="27">
+
+                </div>
+                <div class="sNumb spnRotate180 sectorNumbfloor4" style="margin-left: 400px">302-303</div>
+                <div class="sector sector-5 zoomTarget" data-sector-id="26">
+
+                </div>
+              </div>
+              <div class="floor-3">
+                <div class="sNumb spnRotate180 sectorNumbfloor3"></div>
+                <div class="sector sector-6 zoomTarget" >
+                </div>
+                <div class="sNumb spnRotate180 sectorNumbfloor3" style="margin-left: 100px"></div>
+                <div class="sector sector-7 zoomTarget">
+                </div>
+                <div class="sNumb spnRotate180 sectorNumbfloor3" style="margin-left: 200px"></div>
+                <div class="sector sector-8 zoomTarget">
+                </div>
+                <div class="sNumb spnRotate180 sectorNumbfloor3" style="margin-left: 300px"></div>
+                <div class="sector sector-9 zoomTarget">
+                </div>
+                <div class="sNumb spnRotate180 sectorNumbfloor3" style="margin-left: 400px"></div>
+                <div class="sector sector-10 zoomTarget">
+                </div>
+              </div>
+              <div class="floor-2">
+                <div class="sNumb spnRotate180 sectorNumb">106-107</div>
+                <div class="sector sector-11 zoomTarget" data-sector-id="11">
+                  <div class="seat-map-11">
+                  </div>
+                </div>
+                <div class="sNumb spnRotate180 sectorNumb" style="margin-left: 100px">105-106</div>
+                <div class="sector sector-12 zoomTarget" data-sector-id="12">
+                  <div class="seat-map-12">
+                  </div>
+                </div>
+                <div class="sNumb spnRotate180 sectorNumb" style="margin-left: 200px;">104-105</div>
+                <div class="sector sector-13 zoomTarget"  >
+                </div>
+                <div class="sNumb spnRotate180 sectorNumb" style="margin-left: 300px;" >103-104</div>
+                <div class="sector sector-14 zoomTarget" data-sector-id="28">
+                  <div class="seat-map-28">
+
+                  </div>
+                </div>
+                <div class="sNumb spnRotate180 sectorNumb" style="margin-left: 400px;" >102-103</div>
+                <div class="sector sector-15 zoomTarget">
+                </div>
+              </div>
+              <div class="floor-1">
+                <div class="sector sector-16 ">
+                </div>
+                <div class="sector sector-17 ">
+                </div>
+                <div class="sector sector-18 ">
+                </div>
+                <div class="sector sector-19 ">
+                </div>
+                <div class="sector sector-20 ">
+                </div>
+              </div>
+            </div>
+          </div>
+          <input type="hidden" id="availableSectorNames" value='<%= @event.sectors %>'>
+          <div class="section section-8">
+            <div class="dvgnrlCount">
+              <table>
+                <tr>
+                  <td><li style="list-style-type:square; color:red"> </li></td>
+                  <td><span>Satılıb: </span></td>
+                  <td ><span id="spngnrlSold"></span></td>
+                </tr>
+                <tr>
+                  <td><li style="list-style-type:square; color:yellow"> </li></td>
+                  <td><span>Bron edilib: </span></td>
+                  <td><span id="spngnrlBron"></span></td>
+                </tr>
+                <tr>
+                  <td><li style="list-style-type:square; color:green"> </li></td>
+                  <td> <span>Boş yerlər: </span></td>
+                  <td ><span id="spngnrlAvailable"></span></td>
+                </tr>
+              </table>
+
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="event_desc">
+
+      </div>
+      <div class="event_quote">
+        <div class="event_quote_pic fl">
+          <img src="/logo.png" alt="">
+        </div>
+        <div class="rightpartqioute">
+        <div class="cf"></div>
+          <p class="event_qoute_desc"><%= @event.description %></p>  </div>
+
+        </div>
+      </div>
+      <div class="event_upcoming">
+        <div class="event_upcoming_center">
+          <!-- <h2 class="event_upcoming_title" style="color: white;">Qarşıdan gələn tədbirlər</h2>
+
+          <div class="event_upcoming_list">
+            <div class="events_list_item fl">
+              <div class="events_list_item_pic">
+                <a href="event_opened.html"><img src="/assets/events/events1.jpg" alt=""></a>
+              </div>
+              <div class="events_list_item_pic_hover">
+                <p><a href="event_opened.html">Daha çox</a></p>
+              </div>
+              <div>
+                <div class="leftevpart">
+                  <ul class="events_list_item_date fl">
+                    <li class="first_date">21</li>
+                    <li>Fevral</li>
+                    <li>2016</li>
+                  </ul>
+                  <div class="events_list_item_line fl"></div>
+                </div>
+                <p class="events_list_item_desc">Men's / Women's Artistic Gymnastics Day 1 - (FIG WORLD CHALLENGE CUP AGF TROPHY ).</p>
+
+                <div class="cf"></div>
+              </div>
+            </div>
+            <div class="events_list_item fl">
+              <div class="events_list_item_pic">
+                <a href="event_opened.html"><img src="/assets/events/events2.jpg" alt=""></a>
+
+                <div class="events_list_item_pic_hover">
+                  <p><a href="event_opened.html">Daha çox</a></p>
+                </div>
+              </div>
+              <div>
+                <div class="leftevpart">
+                  <ul class="events_list_item_date fl">
+                    <li class="first_date">20</li>
+                    <li>Fevral</li>
+                    <li>2016</li>
+                  </ul>
+                  <div class="events_list_item_line fl"></div>
+                </div>
+                <p class="events_list_item_desc">Men's / Women's Artistic Gymnastics Day 1 - (FIG WORLD CHALLENGE CUP AGF TROPHY )</p>
+
+                <div class="cf"></div>
+              </div>
+            </div>
+            <div class="events_list_item fl">
+              <div class="events_list_item_pic">
+                <a href="event_opened.html"><img src="/Batut.jpg" alt=""></a>
+
+                <div class="events_list_item_pic_hover">
+                  <p><a href="event_opened.html">Daha çox</a></p>
+                </div>
+              </div>
+              <div>
+                <div class="leftevpart">
+                  <ul class="events_list_item_date fl">
+                    <li class="first_date">05</li>
+                    <li>Mart</li>
+                    <li>2016</li>
+                  </ul>
+                  <div class="events_list_item_line fl"></div>
+                </div>
+                <p class="events_list_item_desc">Trampoline Gymnastics </p>
+
+                <div class="cf"></div>
+              </div>
+            </div>
+            <div class="events_list_item fl" style="margin: 40px 0 0 0;">
+              <div class="events_list_item_pic">
+                <a href="event_opened.html"><img src="/Batut.jpg" alt=""></a>
+
+                <div class="events_list_item_pic_hover">
+                  <p><a href="event_opened.html">Daha çox</a></p>
+                </div>
+              </div>
+              <div>
+                <div class="leftevpart">
+                  <ul class="events_list_item_date fl">
+                    <li class="first_date">06</li>
+                    <li>Mart</li>
+                    <li>2016</li>
+                  </ul>
+                  <div class="events_list_item_line fl"></div>
+                </div>
+                <p class="events_list_item_desc">Trampoline Gymnastics</p>
+
+                <div class="cf"></div>
+              </div>
+            </div>
+            <div class="cf"></div>-->
+          </div>
+        </div>
+
+
+        <div id="dialog">
+          <table style="width:100%">
+            <tr>
+              <td colspan="2">
+                <input style="width:92%; margin-bottom: 10px;" id="tbxpercentDiscount" type="number"  placeholder="Endirim faizini yazın" value="0" required="required"/>&nbsp;%
+              </td>
+            </tr>
+            <tr style="text-align:center">
+              <td> <span>Endirim</span></td>
+              <td> <span>Endirimli qiymət</span></td>
+            </tr>
+            <tr style="text-align:center">
+              <td> <span id="spnDiscount"></span></td>
+              <td> <span id="spnDiscountedprice"></span></td>
+            </tr>
+            <tr >
+              <td colspan="2">
+                <button style="margin-top: 10px; width:100%;background-color: #2ABE9E;">
+                  <span id="btnDiscount">Satış</span>
+                </button>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <script type="text/javascript">
+          $event_id = '<%= @event.id %>';
+          var $cart = $('#selected-seats'),
+              $counter = $('#counter'),
+              $total = $('#total');
+
+          $cart.on('click', '.cancel-cart-item', function () {
+            //let's just trigger Click event on the appropriate seat, so we don't have to repeat the logic here
+            clickedItem = $(this).parents('li:first');
+            $('#' + clickedItem.data('seat-id')).click();
+          });
+
+
+
+
+          $('#checkout-button').click(function(){
+            $.post( "/cashier/sell_tickets", { event_id: $event_id })
+                .done(function( data ) {
+                  $sc.find('selected').status('available');
+                  updateCounter();
+                  printInvoice("/cashier/invoicepdf/" + data + ".pdf");
+                })
+                .error(function(data){
+                  alert(data)
+                });
+          });
+
+          $('#invitation-button').click(function() {
+            $.post( "/cashier/sell_tickets/invitation", { event_id: $event_id })
+                .done(function( data ) {
+                  $sc.find('selected').status('available');
+                  updateCounter();
+                  printInvoice("/cashier/invoicepdf/" + data + ".pdf");
+                })
+                .error(function(data){
+                  alert(data)
+                });
+          });
+
+          $('#discount-button').click(function() {
+            $('#dialog').dialog('open');
+          });
+
+          $('#btnDiscount').click(function(){
+            var percent = $('#tbxpercentDiscount').val();
+            console.log(percent);
+            if (percent == null || percent == '' || percent == '0')
+            {
+              alert("Endirim faizini daxil edin")
+            }
+            else
+            {
+              $.post( "/cashier/sell_tickets/discount", { event_id: $event_id, percent: percent })
+                  .done(function( data ) {
+                    $('#dialog').dialog('close');
+                    $sc.find('selected').status('available');
+                    updateCounter();
+                    printInvoice("/cashier/invoicepdf/" + data + ".pdf");
+                  })
+                  .error(function(data){
+                    alert(data)
+                  });
+            }
+          });
+
+          $('#bron-button').click(function(){
+            var name = prompt("Bron üçün ad daxil edin");
+            var days = prompt("Bronu neçə gün saxlamaq istəyirsiniz?");
+            $.post( "/cashier/bron_tickets", { event_id: "<%= @event.id %>", name: name, days: days })
+                .done(function( data ) {
+                  $sc.find('selected').status('available');
+                  updateCounter();
+                })
+                .error(function(data){
+                  alert(data)
+                });
+          });
+          function updateCounter (){
+            $.ajax({
+              type: 'POST',
+              url: "/cashier/mySelectedSeats",
+              data: { event_id: $event_id },
+              async:false
+            }).done(function(data){
+              $cart.empty();
+              var total = 0;
+              $('#counter').text(data.length);
+              $.each(data, function(key, selectedSeat){
+                if(selectedSeat.bron_seat == null)
+                {
+                  $('<li class="selectedPlaces">' + selectedSeat.seat.real_row + selectedSeat.seat.real_column + ', '+ selectedSeat.selling_seat.price +' AZN </b> <a class="cancel-cart-item">[ləğv et]</a>,</li>')
+                      .attr('data-seat-id', selectedSeat.seat.id)
+                      .attr('data-event-id', selectedSeat.event_id)
+                      .attr('data-sector-id', selectedSeat.seat.sector_id)
+                      .attr('title', 'Sektor:  ' +selectedSeat.seat.sector_id)
+                      .appendTo($cart);
+                }
+                else
+                {
+                  $('<li class="selectedPlaces">' + selectedSeat.seat.real_row + selectedSeat.seat.real_column + ', '+ selectedSeat.selling_seat.price +' AZN, Bron: '+ selectedSeat.bron_seat.fullName +' </b> <a class="cancel-cart-item">[ləğv et]</a>,</li>')
+                      .attr('data-seat-id', selectedSeat.seat.id)
+                      .attr('data-event-id', selectedSeat.event_id)
+                      .attr('data-sector-id', selectedSeat.seat.sector_id)
+                      .attr('title', 'Sektor:  ' +selectedSeat.seat.sector_id)
+                      .appendTo($cart);
+                }
+
+                total = total += selectedSeat.selling_seat.price;
+                $('#total').text(total);
+              });
+              if(data.length == 0)
+              {
+                $('#total').text("0");
+              }
+            }).error(function(data){
+              alert('Seçilmiş oturacaqlar yenilənə bilmədi. İnternet bağlantınızdan əmin olduqdan sonra təkrar yoxlayın.');
+            });
+          }
+
+          function printInvoice(url){
+            $(".btnPrint").printPage({
+              url: url,
+              attr: "href",
+              message:"Bilet hazırlanır"
+            });
+
+            $(".btnPrint").delay(10000).click();
+
+            console.log($('#printPage'))
+          }
+          updateCounter();
+        </script>
+  <% else %>
+      <!--<img src="/TrophyEvent.jpg" style="width: 100%;"/> -->
+  <% end %>
+  </div>
